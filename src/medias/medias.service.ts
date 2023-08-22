@@ -1,26 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
+import { Media } from './entities/media.entity';
 
 @Injectable()
 export class MediasService {
-  create(createMediaDto: CreateMediaDto) {
-    return 'This action adds a new media';
+
+  private medias: Media[]
+
+  constructor(){
+    this.medias = []
   }
 
-  findAll() {
-    return `This action returns all medias`;
+  createMedia(CreateMediaDto: CreateMediaDto) {
+
+    const {id, title, username} = CreateMediaDto;
+
+    if(!title || !username) throw new BadRequestException('Title and username are required.')
+
+    const sameCombination = this.medias.find(media => media.getTitle() === title && media.getUsername() === username);
+    if(sameCombination) throw new ConflictException('A media with the same title and username already exists.')
+    
+    return this.medias.push(new Media((this.medias.length + 1), title, username))
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} media`;
+  findAllMedia() {
+
+    if(this.medias.length === 0) return [];
+    return this.medias
   }
 
-  update(id: number, updateMediaDto: UpdateMediaDto) {
+
+
+  findOneMedia(id: number) {
+    // const mediaId = this.medias.find(media => media.getId() === id);
+    // if (!mediaId){
+    //   throw new NotFoundException('Media not found.');
+    // }
+
+    // return {
+    //   id: mediaId.getId(),
+    //   title: mediaId.getTitle(),
+    //   username: mediaId.getUsername(),
+    // };
+  }
+
+  updateMedia(id: number, updateMediaDto: UpdateMediaDto) {
     return `This action updates a #${id} media`;
   }
 
-  remove(id: number) {
+  removeMedia(id: number) {
     return `This action removes a #${id} media`;
   }
 }
