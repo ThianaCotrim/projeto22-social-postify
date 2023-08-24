@@ -1,16 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostsRepository } from './posts.repository';
 
 
 @Injectable()
 export class PostsService {
+
+  constructor(private readonly repository: PostsRepository){ }
+
   create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+
+    const {title, text, image} = createPostDto
+
+    if (!title || !text) throw new BadRequestException()
+
+    return this.repository.create({title, text, image})
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll() {
+    const arrayPost = await this.repository.findAll()
+    if(arrayPost.length === 0) return []
+    return arrayPost
   }
 
   findOne(id: number) {

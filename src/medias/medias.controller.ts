@@ -15,7 +15,7 @@ export class MediasController {
 
 
   @Get()
-  findAllMedia() {
+  async findAllMedia() {
     return this.mediasService.findAllMedia();
   }
 
@@ -27,13 +27,13 @@ export class MediasController {
 
 
   @Put(':id')
-  updateMedia(@Param('id') id: number, @Body() updateMediaDto: UpdateMediaDto) {
+  async updateMedia(@Param('id') id: number, @Body() updateMediaDto: UpdateMediaDto) {
     return this.mediasService.updateMedia(+id, updateMediaDto);
   }
 
 
   @Delete(':id')
-  removeMedia(@Param('id') id: number) {
+  async removeMedia(@Param('id') id: number) {
     return this.mediasService.removeMedia(+id);
   }
 }
