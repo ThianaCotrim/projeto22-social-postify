@@ -16,8 +16,8 @@ export class PublicationRepository {
     return this.prisma.publication.findMany()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} publication`;
+  async findOne(id: number) {
+    return await this.prisma.publication.findFirst({where: {id}})
   }
 
   update(id: number, updatePublicationDto: UpdatePublicationDto) {
@@ -25,6 +25,6 @@ export class PublicationRepository {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} publication`;
+    return this.prisma.publication.delete({where: {id}})
   }
 }

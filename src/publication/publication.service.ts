@@ -30,7 +30,7 @@ export class PublicationService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} publication`;
+    return this.repository.findOne(id)
   }
 
   update(id: number, updatePublicationDto: UpdatePublicationDto) {
@@ -38,6 +38,6 @@ export class PublicationService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} publication`;
+    return this.repository.remove(id)
   }
 }
