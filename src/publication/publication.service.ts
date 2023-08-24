@@ -1,15 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { UpdatePublicationDto } from './dto/update-publication.dto';
+import { PublicationRepository } from './publication.repository';
 
 @Injectable()
+
 export class PublicationService {
-  create(createPublicationDto: CreatePublicationDto) {
-    return 'This action adds a new publication';
+
+  constructor(private readonly repository: PublicationRepository ){ }  
+
+  async create(createPublicationDto: CreatePublicationDto) {
+    
+    const {mediaId, postId, date} = createPublicationDto
+
+    if(!mediaId || !postId || !date) throw new BadRequestException()
+
+    const media = this.repository.findOne(mediaId)
+    const post = this.repository.findOne(postId)
+
+    if(!media || !post) throw new NotFoundException()
+
+    return this.repository.create({mediaId, postId, date})  
   }
 
-  findAll() {
-    return `This action returns all publication`;
+  async findAll() {
+    const arrayPublication = await this.repository.findAll()
+    if(arrayPublication.length === 0) return []
+    return arrayPublication
   }
 
   findOne(id: number) {

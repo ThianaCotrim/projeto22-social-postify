@@ -18,17 +18,20 @@ export class PostsService {
     return this.repository.create({title, text, image})
   }
 
+
  async findAll() {
     const arrayPost = await this.repository.findAll()
     if(arrayPost.length === 0) return []
     return arrayPost
   }
 
+
  async findOne(id: number) {
     const post = await this.repository.findOne(id)
     if(!post) throw new NotFoundException()
     return post
   }
+
 
  async update(id: number, updatePostDto: UpdatePostDto) {
 
@@ -38,6 +41,7 @@ export class PostsService {
     return await this.repository.update(id, updatePostDto)
   }
 
+  
  async remove(id: number) {
     const post = await this.repository.findOne(id)
     if(!post) throw new NotFoundException()

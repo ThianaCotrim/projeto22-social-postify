@@ -12,21 +12,25 @@ export class PostsController {
     return this.postsService.create(createPostDto);
   }
 
+
   @Get()
   findAll() {
     return this.postsService.findAll();
   }
+
 
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.postsService.findOne(+id);
   }
 
+
   @Put(':id')
   update(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(+id, updatePostDto);
   }
 
+  
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.postsService.remove(+id);
