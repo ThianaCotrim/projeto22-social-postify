@@ -14,7 +14,7 @@ export class PostsRepository {
    return this.prisma.posts.create({ data: createPostDto})
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.posts.findMany()
   }
 
@@ -23,10 +23,12 @@ export class PostsRepository {
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+    return this.prisma.posts.update({
+      where: {id},
+      data: updatePostDto})
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+ async remove(id: number) {
+    return await this.prisma.posts.delete({where: {id}})
   }
 }

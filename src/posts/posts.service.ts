@@ -30,11 +30,18 @@ export class PostsService {
     return post
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+ async update(id: number, updatePostDto: UpdatePostDto) {
+
+    const post = await this.repository.findOne(id)
+    if(!post) throw new NotFoundException()
+
+    return await this.repository.update(id, updatePostDto)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+ async remove(id: number) {
+    const post = await this.repository.findOne(id)
+    if(!post) throw new NotFoundException()
+
+    return this.repository.remove(id)
   }
 }
