@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { UpdatePublicationDto } from './dto/update-publication.dto';
 import { PublicationRepository } from './publication.repository';
+import dayjs from 'dayjs';
 
 @Injectable()
 
@@ -29,15 +30,36 @@ export class PublicationService {
     return arrayPublication
   }
 
-  findOne(id: number) {
-    return this.repository.findOne(id)
+  async findOne(id: number) {
+    const publication = await this.repository.findOne(id)
+    if(!publication) throw new NotFoundException()
+    return publication
+    
   }
 
-  update(id: number, updatePublicationDto: UpdatePublicationDto) {
-    return `This action updates a #${id} publication`;
+  async update(id: number, updatePublicationDto: UpdatePublicationDto) {
+
+    const { mediaId, postId, date } = updatePublicationDto;
+
+    const publication = await this.repository.findOne(id);
+    if (!publication) throw new NotFoundException();
+
+    const media = await this.repository.findOne(mediaId);
+    const post = await this.repository.findOne(postId);
+    if (!post || !media) throw new NotFoundException()
+
+    const currentDate = new Date(Date.now());
+      const isPassed = dayjs(currentDate).isAfter(publication.date)
+
+    if (isPassed) throw new ForbiddenException();
+
+    return this.repository.update(id, updatePublicationDto)
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const publication = await this.repository.findOne(id)
+    if(!publication) throw new NotFoundException()
+
     return this.repository.remove(id)
   }
 }
