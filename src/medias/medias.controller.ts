@@ -9,9 +9,10 @@ export class MediasController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createMedia(@Body() createMediaDto: CreateMediaDto) {
-    return this.mediasService.createMedia(createMediaDto);
+  async createMedia(@Body() createMediaDto: CreateMediaDto) {
+    return await this.mediasService.createMedia(createMediaDto);
   }
+
 
   @Get()
   findAllMedia() {
@@ -20,17 +21,19 @@ export class MediasController {
 
 
   @Get(':id')
-  findOneMedia(@Param('id') id: string) {
-    return this.mediasService.findOneMedia(+id);
+  async findOneMedia(@Param('id') id: number) {
+    return await this.mediasService.findOneMedia(+id);
   }
 
+
   @Put(':id')
-  updateMedia(@Param('id') id: string, @Body() updateMediaDto: UpdateMediaDto) {
+  updateMedia(@Param('id') id: number, @Body() updateMediaDto: UpdateMediaDto) {
     return this.mediasService.updateMedia(+id, updateMediaDto);
   }
 
+
   @Delete(':id')
-  removeMedia(@Param('id') id: string) {
+  removeMedia(@Param('id') id: number) {
     return this.mediasService.removeMedia(+id);
   }
 }

@@ -14,8 +14,5 @@ export class CreateMediaDto {
     message: 'All fields are required!',
     })
     username: string
-
-    @IsNotEmpty()
-    id: number
     
 }

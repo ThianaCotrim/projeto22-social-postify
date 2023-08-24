@@ -1,55 +1,66 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
-import { Media } from './entities/media.entity';
+import { Media } from '@prisma/client';
+import { MediasRepository } from './medias.repository';
 
 @Injectable()
 export class MediasService {
 
-  private medias: Media[]
+  constructor(private readonly repository: MediasRepository){ }
 
-  constructor(){
-    this.medias = []
-  }
 
-  createMedia(CreateMediaDto: CreateMediaDto) {
-
-    const {id, title, username} = CreateMediaDto;
-
-    if(!title || !username) throw new BadRequestException('Title and username are required.')
-
-    const sameCombination = this.medias.find(media => media.getTitle() === title && media.getUsername() === username);
-    if(sameCombination) throw new ConflictException('A media with the same title and username already exists.')
+  async createMedia(CreateMediaDto: CreateMediaDto) {
     
-    return this.medias.push(new Media((this.medias.length + 1), title, username))
-  }
+    const {title, username}   = CreateMediaDto
 
-  findAllMedia() {
+     if(!title || !username) throw new BadRequestException('Title and username are required.')
+     const MediaExis = await this.repository.checkTitleAndUsername(title, username)
+    if (MediaExis) throw new ConflictException() 
 
-    if(this.medias.length === 0) return [];
-    return this.medias
-  }
+  return await this.repository.createMedia({title, username})
+  };
 
 
 
-  findOneMedia(id: number) {
-    // const mediaId = this.medias.find(media => media.getId() === id);
-    // if (!mediaId){
-    //   throw new NotFoundException('Media not found.');
-    // }
+  async findAllMedia() {
 
-    // return {
-    //   id: mediaId.getId(),
-    //   title: mediaId.getTitle(),
-    //   username: mediaId.getUsername(),
-    // };
-  }
+    const arrayMedia = await this.repository.findAllMedia()
+    if(arrayMedia.length === 0){
+    return []
+    }
+    return arrayMedia
+  };
 
-  updateMedia(id: number, updateMediaDto: UpdateMediaDto) {
-    return `This action updates a #${id} media`;
-  }
 
-  removeMedia(id: number) {
-    return `This action removes a #${id} media`;
-  }
+
+  async findOneMedia(id: number) {
+    const media = await this.repository.findOneMedia(id)
+    if (!media) throw new NotFoundException();
+    return media
+
+  };
+    
+
+
+  async updateMedia(id: number, updateMediaDto: UpdateMediaDto) {
+    const {title, username } = updateMediaDto
+    const media = await this.repository.findOneMedia(id)
+    if(!media) throw new NotFoundException()
+
+    const MediaExis = await this.repository.checkTitleAndUsername(title, username)
+    if (MediaExis) throw new ConflictException() 
+
+    return this.repository.updateMedia(id, updateMediaDto)
+  };
+
+
+
+  async removeMedia(id: number) {
+
+    const media = await this.repository.findOneMedia(id)
+    if(!media) throw new NotFoundException()
+
+    return this.repository.removeMedia(id)
+  };
 }
