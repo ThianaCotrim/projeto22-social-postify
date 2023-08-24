@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
@@ -9,7 +9,7 @@ export class PostsService {
 
   constructor(private readonly repository: PostsRepository){ }
 
-  create(createPostDto: CreatePostDto) {
+ async create(createPostDto: CreatePostDto) {
 
     const {title, text, image} = createPostDto
 
@@ -18,14 +18,16 @@ export class PostsService {
     return this.repository.create({title, text, image})
   }
 
-  async findAll() {
+ async findAll() {
     const arrayPost = await this.repository.findAll()
     if(arrayPost.length === 0) return []
     return arrayPost
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+ async findOne(id: number) {
+    const post = await this.repository.findOne(id)
+    if(!post) throw new NotFoundException()
+    return post
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {

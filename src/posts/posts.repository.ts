@@ -18,8 +18,8 @@ export class PostsRepository {
     return this.prisma.posts.findMany()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: number) {
+    return await this.prisma.posts.findFirst({ where:{id}})
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
