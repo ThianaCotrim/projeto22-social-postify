@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, HttpCode, ParseIntPipe } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
@@ -33,7 +33,8 @@ export class MediasController {
 
 
   @Delete(':id')
-  async removeMedia(@Param('id') id: number) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeMedia(@Param('id', ParseIntPipe) id: number) {
     return this.mediasService.removeMedia(+id);
   }
 }

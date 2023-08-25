@@ -29,4 +29,5 @@ export class PublicationRepository {
   async remove(id: number) {
     return this.prisma.publication.delete({where: {id}})
   }
+
 }
