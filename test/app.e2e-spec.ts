@@ -237,7 +237,7 @@ it("DELETE /posts/id", async () => {
 
 //PUBLICATION
 
-it('/publication (POST)', async () => {
+it("POST /publication", async () => {
   const media = await prisma.media.create({
     data: {
       title: faker.company.name(),
@@ -263,7 +263,8 @@ it('/publication (POST)', async () => {
     .expect(201)
 })
 
-it('/publication (GET)', async () => {
+
+it("GET /publication", async () => {
   const media = await prisma.media.create({
     data: {
       title: faker.company.name(),
@@ -291,5 +292,72 @@ it('/publication (GET)', async () => {
   expect(response.statusCode).toBe(200);
   expect(response.body).toHaveLength(1)
 })
+
+
+it("GET /publication/id", async () => {
+  const media = await prisma.media.create({
+    data: {
+      title: faker.company.name(),
+      username: faker.person.lastName()
+    }
+  })
+
+  const post = await prisma.posts.create({
+    data: {
+      title: faker.company.name(),
+      text: faker.company.catchPhrase(),
+      image: faker.company.name(),
+    }
+  })
+
+  const publication = await prisma.publication.create({
+    data: {
+      postId: post.id,
+      mediaId: media.id,
+      date: new Date(Date.now()).toISOString()
+    }
+  })
+
+  let response = await request(app.getHttpServer()).get(`/publication/${publication.id}`)
+  expect(response.statusCode).toBe(200);
+  expect(response.body.postId).toBe(publication.postId)
+  expect(response.body.mediaId).toBe(publication.mediaId)
+})
+
+
+it("PUT /publication/id", async () => {
+
+});
+
+
+it("DELETE /publication/id", async () => {
+  const media = await prisma.media.create({
+    data: {
+      title: faker.company.name(),
+      username: faker.person.lastName()
+    }
+  })
+
+  const post = await prisma.posts.create({
+    data: {
+      title: faker.company.name(),
+      text: faker.company.catchPhrase(),
+      image: faker.company.name(),
+    }
+  })
+
+  const publication = await prisma.publication.create({
+    data: {
+      postId: post.id,
+      mediaId: media.id,
+      date: new Date(faker.date.future())
+    }
+  })
+
+  let response = await request(app.getHttpServer())
+    .delete(`/publication/${publication.id}`)
+  expect(response.statusCode).toBe(200);
+})
+
 
 })
