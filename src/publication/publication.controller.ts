@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { PublicationService } from './publication.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { UpdatePublicationDto } from './dto/update-publication.dto';
@@ -8,6 +8,7 @@ export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createPublicationDto: CreatePublicationDto) {
     return this.publicationService.create(createPublicationDto);
   }

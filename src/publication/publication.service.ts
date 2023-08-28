@@ -16,8 +16,8 @@ export class PublicationService {
 
     if(!mediaId || !postId || !date) throw new BadRequestException()
 
-    const media = this.repository.findOne(mediaId)
-    const post = this.repository.findOne(postId)
+      const media = this.repository.findOne(mediaId)
+      const post = this.repository.findOne(postId)
 
     if(!media || !post) throw new NotFoundException()
 

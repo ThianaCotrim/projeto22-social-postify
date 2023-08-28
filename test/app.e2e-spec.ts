@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
+import {faker} from '@faker-js/faker'
 
 
 describe('AppController (e2e)', () => {
@@ -233,30 +234,62 @@ it("DELETE /posts/id", async () => {
   expect(getResponse.statusCode).toBe(404);
 })
 
+
 //PUBLICATION
-// it("POST /publication", async () => {
-//   const currentDate = new Date();
 
-//   await request(app.getHttpServer())
-//     .post("/publication")
-//     .send({
-//       mediaId: 1,
-//       postId: 1,
-//       date: currentDate,
-//     })
-//     .expect(201)
+it('/publication (POST)', async () => {
+  const media = await prisma.media.create({
+    data: {
+      title: faker.company.name(),
+      username: faker.person.lastName()
+    }
+  })
 
-//     const publication = await prisma.publication.findMany();
-//   expect(publication).toHaveLength(1);
+  const post = await prisma.posts.create({
+    data: {
+      title: faker.company.name(),
+      text: faker.company.catchPhrase(),
+      image: faker.company.name(),
+    }
+  })
 
-//   const publications = publication[0];
-//   expect(publications).toEqual({
-//     id: expect.any(Number),
-//       mediaId: 1,
-//       postId: 1,
-//       date: currentDate,
-//   });
-// });
+  await request(app.getHttpServer())
+    .post('/publication')
+    .send({
+      mediaId: media.id,
+      postId: post.id,
+      date: new Date(faker.date.future())
+    })
+    .expect(201)
+})
 
+it('/publication (GET)', async () => {
+  const media = await prisma.media.create({
+    data: {
+      title: faker.company.name(),
+      username: faker.person.lastName()
+    }
+  })
+
+  const post = await prisma.posts.create({
+    data: {
+      title: faker.company.name(),
+      text: faker.company.catchPhrase(),
+      image: faker.company.name(),
+    }
+  })
+
+  await prisma.publication.create({
+    data: {
+      postId: post.id,
+      mediaId: media.id,
+      date: new Date(Date.now()).toISOString()
+    }
+  })
+
+  let response = await request(app.getHttpServer()).get('/publication')
+  expect(response.statusCode).toBe(200);
+  expect(response.body).toHaveLength(1)
+})
 
 })
